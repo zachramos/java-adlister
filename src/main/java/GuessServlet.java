@@ -18,9 +18,12 @@ public class GuessServlet extends HttpServlet {
     }
     private int randomNum = (int) Math.floor(Math.random()*100);
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.sendRedirect("/guess.jsp");
-        setNumber(15);
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        String reset = request.getParameter("reset");
+        if(reset != null && reset.equals("Reset Random Number?")){
+            randomNum = (int) Math.floor(Math.random()*100);
+        }
+        request.getRequestDispatcher("/guess.jsp").forward(request, response);
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -28,9 +31,14 @@ public class GuessServlet extends HttpServlet {
             int guess = Integer.parseInt(request.getParameter("number"));
             String message="";
             if (guess == randomNum){
-
+                message = "You Won!! The number is " + randomNum + "!";
+            }else if (guess < randomNum){
+                message = guess + " is too low";
+            }else if (guess > randomNum){
+                message = guess + " is too high";
             }
+            request.setAttribute("message", message);
         }
-
+        request.getRequestDispatcher("/correctguess.jsp").forward(request,response);
     }
 }
