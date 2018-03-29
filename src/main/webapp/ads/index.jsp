@@ -17,11 +17,12 @@
 <jsp:include page="/partials/navbar.jsp" />
 <div class="container">
     <h1>All Ads</h1>
-    <c:forEach var="Ad" items="${ads}">
-        <h1>${Ad.title}</h1>
-        <p>${Ad.description}</p>
-    </c:forEach>
-
+        <c:forEach var="Ad" items="${ads}">
+            <div class="col-md-6">
+                <h2>${Ad.title}</h2>
+                <p>${Ad.description}</p>
+            </div>
+        </c:forEach>
 </div>
 </body>
 </html>
