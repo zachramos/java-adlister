@@ -15,4 +15,5 @@ CREATE TABLE ads(
   user_id INT UNSIGNED DEFAULT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (user_id) REFERENCES users(id)
+    ON DELETE CASCADE
 );
