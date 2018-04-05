@@ -9,7 +9,7 @@
 <html>
 <head>
     <jsp:include page="partials/head.jsp">
-        <jsp:param name="title" value="Register your profile here!"
+        <jsp:param name="title" value="Register your profile here!"/>
     </jsp:include>
 </head>
 <body>

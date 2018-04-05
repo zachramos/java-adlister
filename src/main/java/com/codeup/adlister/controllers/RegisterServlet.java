@@ -13,7 +13,11 @@ import java.io.IOException;
 @WebServlet(name = "controllers.RegisterServlet", urlPatterns = "/register")
 public class RegisterServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.getRequestDispatcher("/WEB-INF/register.jsp").forward(request,response);
+        if (request.getSession().getAttribute("user") != null) {
+            response.sendRedirect("/profile");
+            return;
+        }
+        request.getRequestDispatcher("/WEB-INF/register.jsp").forward(request, response);
         // TODO: show the registration form
     }
 
@@ -23,18 +27,19 @@ public class RegisterServlet extends HttpServlet {
         String password = request.getParameter("password");
         String confirmPassword = request.getParameter("confirm_password");
 
-        boolean invalidEntry = username.isEmpty() || email.isEmpty() || password.isEmpty() || (!password.equals(confirmPassword));
-
-        if (invalidEntry){
+        User user = new User();
+        user.setUsername(username);
+        user.setEmail(email);
+        user.setPassword(password);
+        if(username != null && email != null && password != null && password.equals(confirmPassword) && email.contains("@") && email.contains(".")){
+            user.setId(DaoFactory.getUsersDao().insert(user));
+            request.getSession().setAttribute("user", user);
+            response.sendRedirect("/profile");
+        } else {
             response.sendRedirect("/register");
-            return;
         }
-
-        User user = new User(username, email, password);
-        DaoFactory.getUsersDao().insert(user);
-        response.sendRedirect("/login");
-        // TODO: ensure the submitted information is valid
-        // TODO: create a new user based off of the submitted information
-        // TODO: if a user was successfully created, send them to their profile
+            // TODO: ensure the submitted information is valid
+            // TODO: create a new user based off of the submitted information
+            // TODO: if a user was successfully created, send them to their profile
     }
 }

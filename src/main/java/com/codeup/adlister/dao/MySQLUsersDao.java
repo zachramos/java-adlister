@@ -24,28 +24,14 @@ public class MySQLUsersDao implements Users {
 
     @Override
     public User findByUsername(String username) {
-        String query = "Select * FROM users WHERE username = ? LIMIT 1";
+        String query = "Select * FROM users WHERE username = ?";
         try {
             PreparedStatement stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, username);
-            return extractUser(stmt.executeQuery());
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    @Override
-    public Long insert(User user) {
-        String query = "INSERT INTO users (username, email, password) VALUE (?,?,?)";
-        try {
-            PreparedStatement stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-            stmt.setString(1, user.getUsername());
-            stmt.setString(2, user.getEmail());
-            stmt.setString(3, user.getPassword());
-            ResultSet rs = stmt.getGeneratedKeys();
-            rs.next();
-            return rs.getLong(1);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()){
+                return extractUser(rs);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -59,5 +45,22 @@ public class MySQLUsersDao implements Users {
                 rs.getString("email"),
                 rs.getString("password")
         );
+    }
+
+    @Override
+    public Long insert(User user) {
+        String query = "INSERT INTO users (username, email, password) VALUE (?,?,?)";
+        try {
+            PreparedStatement stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            stmt.setString(1, user.getUsername());
+            stmt.setString(2, user.getEmail());
+            stmt.setString(3, user.getPassword());
+            stmt.executeUpdate();
+            ResultSet rs = stmt.getGeneratedKeys();
+            rs.next();
+            return rs.getLong(1);
+        } catch (SQLException e) {
+            throw new RuntimeException("Error inserting new user!");
+        }
     }
 }
